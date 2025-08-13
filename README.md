@@ -1,4 +1,4 @@
-# Tariff Bill Calculator
+# PGVCL Bill Calculator
 
 This web app replicates Gujarat electricity billing logic with precision and clarity. It handles:
 
@@ -8,7 +8,7 @@ This web app replicates Gujarat electricity billing logic with precision and cla
 - ✅ Electricity Duty (ED) on applicable components
 - ✅ Print-friendly breakdown with audit-ready details
 
-Designed for regulators, auditors, and consumers who need transparent, trustworthy billing logic.
+Designed consumers who need to understand billing logic.
 
 > Built by B. H. Babariya  
 > UI: Vibrant theme with adaptive layout and one-page print mode
