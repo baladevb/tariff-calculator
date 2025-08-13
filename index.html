@@ -1,0 +1,784 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Tariff Bill Calculator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root{
+      /* Vibrant theme */
+      --bg1: #0f1223;
+      --bg2: #141a37;
+      --panel: #1a2347;
+      --ink: #eef2fb;
+      --ink-strong: #ffffff;
+      --muted: #c9d4ee;
+
+      /* Accents */
+      --accent: #ff5f9e;      /* pink */
+      --accent-2: #6ab3ff;    /* sky */
+      --accent-3: #2ce6b8;    /* teal */
+      --accent-4: #ffd166;    /* amber */
+      --accent-5: #9b6cff;    /* violet */
+
+      /* Lines and cards */
+      --border: #2f3a7a;
+      --line: #25306d;
+      --chip: #1d2656;
+      --row: #1b2452;
+      --row-alt: #202a5e;
+
+      --danger: #ff6b6b;
+      --ok: #62e6a6;
+
+      --radius: 14px;
+      --radius-sm: 10px;
+      --radius-lg: 18px;
+      --shadow: 0 12px 35px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.06);
+    }
+    *{ box-sizing: border-box; }
+    html, body{ height: 100%; }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, "Helvetica Neue", Arial;
+      color: var(--ink);
+      background:
+        radial-gradient(1400px 700px at -10% -20%, rgba(255,95,158,0.20), transparent 40%),
+        radial-gradient(1200px 600px at 110% 10%, rgba(44,230,184,0.18), transparent 40%),
+        linear-gradient(160deg, var(--bg1), var(--bg2));
+    }
+    header{
+      padding: 22px 24px 10px;
+      display: flex; align-items: flex-end; gap: 16px; justify-content: space-between; flex-wrap: wrap;
+    }
+    .title{
+      font-weight: 900; letter-spacing: 0.3px; font-size: 24px; color: var(--ink-strong);
+      background: linear-gradient(90deg, var(--accent), var(--accent-2), var(--accent-3));
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+    .subtitle{ color: var(--muted); font-size: 13px; }
+    .actions{ display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .chip{
+      background: var(--chip); color: var(--ink); padding: 6px 10px; border-radius: 999px; font-size: 11px; border: 1px solid var(--border);
+    }
+
+    .wrap{
+      display: grid; gap: 20px; padding: 16px 24px 32px;
+      grid-template-columns: 400px 1fr;
+    }
+    @media (max-width: 980px){ .wrap{ grid-template-columns: 1fr; } }
+
+    .card{
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.00)),
+        linear-gradient(180deg, rgba(155,108,255,0.10), rgba(106,179,255,0.05));
+      border: 1px solid var(--border); border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .panel{ padding: 18px; display: grid; gap: 16px; }
+    .grid-2{ display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .grid-3{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+
+    label{ font-size: 12px; color: var(--muted); margin-bottom: 6px; display: inline-block; }
+    input, select{
+      width: 100%; padding: 12px 12px; border-radius: 10px; border: 1px solid var(--border);
+      background: #121847; color: var(--ink); outline: none; transition: border 0.15s ease, box-shadow 0.15s ease;
+      box-shadow: inset 0 0 0 9999px rgba(255,255,255,0.02);
+    }
+    input:focus, select:focus{
+      border-color: #6ab3ff;
+      box-shadow: 0 0 0 3px rgba(106,179,255,0.25);
+    }
+    .hint{ font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+    .btn{
+      appearance: none; border: none;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #081a1a; font-weight: 900; padding: 10px 14px; border-radius: 12px; cursor: pointer;
+      box-shadow: 0 14px 26px rgba(255,95,158,0.22);
+    }
+    .btn:hover{ filter: brightness(1.05); }
+    .btn.secondary{
+      background: linear-gradient(135deg, var(--accent-3), var(--accent-4));
+      color: #041a15; box-shadow: 0 14px 26px rgba(44,230,184,0.18);
+    }
+    .btn.outline{
+      background: transparent; color: var(--ink);
+      border: 1px solid var(--border);
+      box-shadow: none;
+    }
+    .btn:active{ transform: translateY(1px); }
+
+    .summary{
+      display: grid; gap: 12px; grid-template-columns: repeat(6, 1fr);
+      padding: 14px; border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,0.05), transparent);
+      border-radius: var(--radius) var(--radius) 0 0;
+    }
+    @media (max-width: 1200px){ .summary{ grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 640px){ .summary{ grid-template-columns: repeat(2, 1fr); } }
+    .metric{
+      background:
+        linear-gradient(180deg, rgba(44,230,184,0.10), rgba(255,255,255,0.02));
+      border: 1px solid var(--border); border-radius: 12px; padding: 10px;
+    }
+    .metric .k{ color: var(--muted); font-size: 11px; }
+    .metric .v{ font-size: 19px; font-weight: 900; margin-top: 6px; color: var(--ink-strong); }
+
+    .section{ padding: 0 14px 16px; display: grid; gap: 12px; }
+
+    /* Breakdown table (colorful) */
+    .bd{
+      margin: 8px 0 4px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(155,108,255,0.04));
+    }
+    .bd-row{
+      display: grid;
+      grid-template-columns: 1.4fr 1fr 0.8fr;
+      gap: 10px;
+      padding: 10px 12px;
+      align-items: center;
+      background: var(--row);
+      border-bottom: 1px solid var(--line);
+    }
+    .bd-row:nth-child(even){ background: var(--row-alt); }
+    .bd-head{
+      background: linear-gradient(90deg, rgba(155,108,255,0.35), rgba(106,179,255,0.35));
+      font-weight: 800; color: var(--ink-strong);
+    }
+    .bd-subhead{
+      grid-template-columns: 1fr;
+      background: linear-gradient(90deg, rgba(106,179,255,0.14), rgba(44,230,184,0.14));
+      color: var(--ink-strong);
+      font-weight: 900;
+      position: relative;
+    }
+    .bd-subhead.fixed{ border-left: 6px solid var(--accent-5); }
+    .bd-subhead.energy{ border-left: 6px solid var(--accent-3); }
+    .bd-subhead.fca{ border-left: 6px solid var(--accent-4); }
+    .bd-subhead.reactive{ border-left: 6px solid #7ee08f; }
+    .bd-subhead.ed{ border-left: 6px solid var(--accent); }
+    .bd-subhead.total{ border-left: 6px solid var(--accent-2); }
+    .bd-note{
+      grid-template-columns: 1fr;
+      font-size: 12px; color: var(--muted);
+    }
+    .bd-blank{ background: transparent; border: none; padding: 2px 12px; }
+    .amt{ text-align: right; font-weight: 900; color: var(--ink-strong); }
+    .total-line{
+      font-size: 18px;
+      background: linear-gradient(90deg, rgba(106,179,255,0.10), rgba(44,230,184,0.10));
+      border-top: 2px solid var(--line);
+    }
+
+    .meta{
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 10px 0 2px;
+    }
+    .meta .pill{
+      background:
+        linear-gradient(180deg, rgba(106,179,255,0.10), rgba(44,230,184,0.05));
+      border: 1px solid var(--border); border-radius: 999px; padding: 6px 10px;
+      font-size: 12px; color: var(--muted);
+    }
+
+    footer{ padding: 10px 24px 24px; color: var(--muted); font-size: 12px; }
+    .note{
+      padding: 8px 12px; border: 1px dashed #5b7cff; border-radius: 10px;
+      background: linear-gradient(180deg, rgba(91,124,255,0.10), rgba(44,230,184,0.06));
+    }
+
+    /* Print styles — compact, single-page friendly with room for browser header/footer */
+    @page {
+      size: A4 portrait;
+      margin: 22mm 12mm; /* top/bottom roomy for browser header/footer, sides comfy */
+    }
+    @media print {
+      * { box-shadow: none !important; text-shadow: none !important; }
+      html, body { background: #fff !important; color: #000 !important; }
+      header, .wrap > section:first-child, footer, .actions { display: none !important; }
+      .card { border: none !important; background: #fff !important; }
+      .summary { border: none !important; background: transparent !important; padding: 0 0 8mm 0 !important; }
+      .metric { background: transparent !important; border: none !important; }
+      .metric .k { color: #333 !important; }
+      .metric .v { color: #000 !important; }
+      #printArea { break-inside: avoid; page-break-inside: avoid; }
+      .bd, .bd-row { border-color: #999 !important; }
+      .bd-row, .bd-row:nth-child(even), .bd-head, .bd-subhead, .bd-note { background: #fff !important; }
+      .bd-head { border-bottom: 2px solid #000 !important; }
+      .amt { color: #000 !important; }
+
+      /* Compact type and spacing to help keep to one page */
+      body { font-size: 12px; }
+      .summary .v { font-size: 16px !important; }
+      .bd-row { padding: 6px 8px !important; }
+      .total-line { font-size: 16px !important; }
+      .meta .pill { border: 1px solid #aaa !important; background: #fff !important; color: #000 !important; padding: 4px 8px !important; }
+    }
+    /* Optional extra scaling for super-tight one-page print */
+    @media print {
+      body.fit-scale #printArea {
+        transform: scale(0.92);
+        transform-origin: top left;
+        width: 108%;
+      }
+    }
+
+    #printBtn { display: none; }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <div class="title">Tariff Bill Calculator</div>
+      <div class="subtitle">Vibrant UI, exact day proration, and one‑page print</div>
+    </div>
+    <div class="actions">
+      <span class="chip">FCA in ₹/unit</span>
+      <span class="chip">Designed By B. H. Babariya</span>
+      <button class="btn" id="calcBtn">Calculate</button>
+      <button class="btn secondary" id="printBtn">Print</button>
+      <button class="btn outline" id="printFitBtn" title="Compact and scale to fit A4 on one page">Print (fit one page)</button>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <!-- Input card -->
+    <section class="card">
+      <div class="panel">
+        <div>
+          <label for="tariff">Tariff</label>
+          <select id="tariff">
+            <optgroup label="Residential General">
+              <option value="RGPU">RGPU</option>
+              <option value="RGPU_BPL">RGPU (BPL)</option>
+              <option value="RGPR">RGPR</option>
+              <option value="RGPR_BPL">RGPR (BPL)</option>
+            </optgroup>
+            <optgroup label="General / Commercial">
+              <option value="GLP">GLP</option>
+              <option value="NRGP">NRGP</option>
+              <option value="LTMD">LTMD</option>
+            </optgroup>
+            <optgroup label="Agriculture">
+              <option value="A1">A1</option>
+              <option value="A2">A2</option>
+              <option value="A3">A3</option>
+              <option value="A4">A4</option>
+              <option value="A5">A5</option>
+            </optgroup>
+            <optgroup label="Water Works">
+              <option value="WW_MU">WW.MU</option>
+              <option value="WW_NP">WW.NP</option>
+              <option value="WW_GP">WW.GP</option>
+              <option value="WW_PR">WW.PR</option>
+            </optgroup>
+            <optgroup label="Temporary">
+              <option value="TEMP">TEMP</option>
+            </optgroup>
+          </select>
+        </div>
+
+        <div class="grid-2">
+          <div>
+            <label id="clLabel" for="cl">Contracted Load (kW)</label>
+            <input type="number" id="cl" step="0.01" min="0" placeholder="e.g., 5" />
+            <div class="hint" id="clHint">Used for fixed and some energy rates.</div>
+          </div>
+          <div id="mdWrap">
+            <label for="md">Maximum Demand (kW)</label>
+            <input type="number" id="md" step="0.01" min="0" placeholder="e.g., 8" />
+            <div class="hint">LTMD: Used for billing demand (vs 85% of CL).</div>
+          </div>
+        </div>
+
+        <div class="grid-3">
+          <div>
+            <label for="units">Units (kWh)</label>
+            <input type="number" id="units" step="0.01" min="0" placeholder="e.g., 275" />
+            <div class="hint">Energy consumption for the period.</div>
+          </div>
+          <div>
+            <label for="days">Days</label>
+            <input type="number" id="days" step="1" min="1" value="30" />
+            <div class="hint">All monthly items scale by Days/30 (A1 uses Days/365; TEMP per day).</div>
+          </div>
+          <div id="kvarhWrap">
+            <label for="kvarh">Reactive energy (kvarh)</label>
+            <input type="number" id="kvarh" step="0.01" min="0" placeholder="e.g., 120" />
+            <div class="hint">LTMD only: ₹0.10/kvarh.</div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div id="fcaWrap">
+            <label for="fca">FCA rate (₹/unit)</label>
+            <input type="number" id="fca" step="0.01" min="0" value="2.45" />
+            <div class="hint">Applied as Units × FCA rate.</div>
+          </div>
+          <div id="edWrap">
+            <label for="ed">Electricity Duty (%)</label>
+            <input type="number" id="ed" step="0.01" min="0" max="100" placeholder="e.g., 15" />
+            <div class="hint">Applies on Fixed + Energy + FCA + Reactive.</div>
+          </div>
+        </div>
+
+        <div class="hint">All amounts shown in ₹ with 2 decimals; slabs prorate by Days/30.</div>
+      </div>
+    </section>
+
+    <!-- Results card (print area) -->
+    <section class="card" id="printArea">
+      <div class="summary">
+        <div class="metric"><div class="k">Fixed charge</div><div class="v" id="mFixed">₹0.00</div></div>
+        <div class="metric"><div class="k">Energy charge</div><div class="v" id="mEnergy">₹0.00</div></div>
+        <div class="metric"><div class="k">FCA</div><div class="v" id="mFCA">₹0.00</div></div>
+        <div class="metric"><div class="k">Reactive</div><div class="v" id="mReactive">₹0.00</div></div>
+        <div class="metric"><div class="k">Electricity duty</div><div class="v" id="mED">₹0.00</div></div>
+        <div class="metric"><div class="k">Total payable</div><div class="v" id="mTotal">₹0.00</div></div>
+      </div>
+
+      <div class="section">
+        <div class="meta" id="metaLine">
+          <div class="pill" id="metaTariff">Tariff: —</div>
+          <div class="pill" id="metaPeriod">Days: —</div>
+          <div class="pill" id="metaUsage">Units: —</div>
+          <div class="pill" id="metaCL">CL: —</div>
+          <div class="pill" id="metaMD" style="display:none;">MD: —</div>
+          <div class="pill" id="metaFCA">FCA: —</div>
+          <div class="pill" id="metaED">ED: —</div>
+        </div>
+
+        <div class="bd" id="bd">
+          <div class="bd-row bd-head">
+            <div>Description</div>
+            <div>Quantity × Rate</div>
+            <div class="amt">Amount</div>
+          </div>
+          <div class="bd-row bd-blank"><div>Awaiting input…</div></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="note">
+      Tip: A1 Bill Won't match the official bill as it uses Days/365 for fixed charge. Use 61 Days for 2 months(only for A1) 
+    </div>
+  </footer>
+
+  <script>
+    // Money helpers
+    const toPaise = (rupees) => Math.round((+rupees || 0) * 100);
+    const toRupees = (paise) => (paise / 100);
+    const fmt = (paise) => '₹' + toRupees(paise).toFixed(2);
+
+    // UI elements
+    const el = (id) => document.getElementById(id);
+    const tariffEl = el('tariff'), clEl = el('cl'), mdEl = el('md'), unitsEl = el('units'),
+          daysEl = el('days'), kvarhEl = el('kvarh'), fcaEl = el('fca'), edEl = el('ed');
+    const mdWrap = el('mdWrap'), kvarhWrap = el('kvarhWrap'), fcaWrap = el('fcaWrap'), edWrap = el('edWrap');
+    const clLabel = el('clLabel'), clHint = el('clHint');
+    const mFixed = el('mFixed'), mEnergy = el('mEnergy'), mFCA = el('mFCA'), mReactive = el('mReactive'), mED = el('mED'), mTotal = el('mTotal');
+    const bd = el('bd');
+    const metaTariff = el('metaTariff'), metaPeriod = el('metaPeriod'), metaUsage = el('metaUsage'),
+          metaCL = el('metaCL'), metaMD = el('metaMD'), metaFCA = el('metaFCA'), metaED = el('metaED');
+
+    // Buttons
+    const printBtn = el('printBtn');
+    const printFitBtn = el('printFitBtn');
+    const calcBtn = el('calcBtn');
+
+    // Print handlers
+    printBtn.addEventListener('click', () => {
+      document.body.classList.add('print-compact');
+      window.print();
+    });
+    printFitBtn.addEventListener('click', () => {
+      document.body.classList.add('print-compact', 'fit-scale');
+      window.print();
+    });
+    window.addEventListener('afterprint', () => {
+      document.body.classList.remove('print-compact', 'fit-scale');
+    });
+
+    // Tariff configuration (includes requested rule updates)
+    const Tariffs = {
+      RGPU: { label: 'RGPU', clUnit: 'kW', usesMD: false, reactive: false, fca: true, ed: true,
+        fixed: ({CL, days}) => {
+          const rate = (CL <= 2) ? 15 : (CL <= 4) ? 25 : (CL <= 6) ? 45 : 70; // ₹ per 30 days
+          return toPaise(rate * (days/30));
+        },
+        energySlab: { caps: [50,50,150,Infinity], ratesPaise: [305,350,415,520] }
+      },
+      RGPU_BPL: { label: 'RGPU (BPL)', clUnit: 'kW', usesMD: false, reactive: false, fca: true, ed: true,
+        fixed: ({days}) => toPaise(5 * (days/30)),
+        bplBase: { caps: [50,50,150,Infinity], ratesPaise: [305,350,415,520] }
+      },
+      RGPR: { label: 'RGPR', clUnit: 'kW', usesMD: false, reactive: false, fca: true, ed: true,
+        fixed: ({CL, days}) => {
+          const rate = (CL <= 2) ? 15 : (CL <= 4) ? 25 : (CL <= 6) ? 45 : 70;
+          return toPaise(rate * (days/30));
+        },
+        energySlab: { caps: [50,50,150,Infinity], ratesPaise: [265,310,375,490] }
+      },
+      RGPR_BPL: { label: 'RGPR (BPL)', clUnit: 'kW', usesMD: false, reactive: false, fca: true, ed: true,
+        fixed: ({days}) => toPaise(5 * (days/30)),
+        bplBase: { caps: [50,50,150,Infinity], ratesPaise: [265,310,375,490] }
+      },
+      GLP: { label: 'GLP', clUnit: 'kW', usesMD: false, reactive: false, fca: true, ed: true,
+        fixed: ({days}) => toPaise(70 * (days/30)),
+        energyFlat: 3.90
+      },
+      NRGP: { label: 'NRGP', clUnit: 'kW', usesMD: false, reactive: false, fca: true, ed: true,
+        fixed: ({CL, days}) => {
+          const first = Math.min(CL, 10) * 50;
+          const second = Math.max(Math.min(CL - 10, 30), 0) * 85;
+          return toPaise((first + second) * (days/30));
+        },
+        energyFlatFn: ({CL}) => (CL <= 10 ? 4.35 : 4.65)
+      },
+      LTMD: { label: 'LTMD', clUnit: 'kW', usesMD: true, reactive: true, fca: true, ed: true,
+        fixed: ({CL, MD, days}) => {
+          const bdemand = Math.max(0.85 * CL, MD); // billing demand
+          const withinCL = Math.min(bdemand, CL);
+          const w1 = Math.min(withinCL, 40);
+          const w2 = Math.min(Math.max(withinCL - 40, 0), 20);
+          const w3 = Math.max(withinCL - 60, 0);
+          const withinCost = w1 * 90 + w2 * 130 + w3 * 195;
+          const above = Math.max(bdemand - CL, 0);
+          const aboveCost = above * 265;
+          const monthly = withinCost + aboveCost;
+          return toPaise(monthly * (days/30));
+        },
+        energyFlat: 4.60
+      },
+      A1: { label: 'A1', clUnit: 'HP', usesMD: false, reactive: false, fca: false, ed: false,
+        fixed: ({CL, days}) => toPaise(CL * 665 * (days/365)), energyFlat: 0
+      },
+      A2: { label: 'A2', clUnit: 'HP', usesMD: false, reactive: false, fca: false, ed: false,
+        fixed: ({CL, days}) => {
+          const first = Math.min(CL, 7.5) * 10;
+          const rest = Math.max(CL - 7.5, 0) * 5;
+          return toPaise((first + rest) * (days/30));
+        },
+        energyFlat: 0.60
+      },
+      A3: { label: 'A3', clUnit: 'HP', usesMD: false, reactive: false, fca: false, ed: false,
+        fixed: ({CL, days}) => {
+          const first = Math.min(CL, 7.5) * 10;
+          const rest = Math.max(CL - 7.5, 0) * 5;
+          return toPaise((first + rest) * (days/30));
+        },
+        energyFlat: 0.80
+      },
+      A4: { label: 'A4', clUnit: 'HP', usesMD: false, reactive: false, fca: false, ed: false,
+        fixed: ({CL, days}) => {
+          const first = Math.min(CL, 7.5) * 10;
+          const rest = Math.max(CL - 7.5, 0) * 5;
+          return toPaise((first + rest) * (days/30));
+        },
+        energyFlat: 0.60
+      },
+      A5: { label: 'A5', clUnit: 'HP', usesMD: false, reactive: false, fca: false, ed: false,
+        fixed: () => 0, energyFlat: 0.60
+      },
+      WW_MU: { label: 'WW.MU', clUnit: 'kW', usesMD: false, reactive: false, fca: true, ed: false,
+        fixed: ({days}) => toPaise(20 * (days/30)), energyFlat: 4.10
+      },
+      WW_NP: { label: 'WW.NP', clUnit: 'kW', usesMD: false, reactive: false, fca: true, ed: false,
+        fixed: () => 0, energyFlat: 3.20
+      },
+      WW_GP: { label: 'WW.GP', clUnit: 'kW', usesMD: false, reactive: false, fca: true, ed: false,
+        fixed: () => 0, energyFlat: 3.20
+      },
+      WW_PR: { label: 'WW.PR', clUnit: 'kW', usesMD: false, reactive: false, fca: true, ed: true,
+        fixed: ({days}) => toPaise(25 * (days/30)), energyFlat: 4.30
+      },
+      TEMP: { label: 'TEMP', clUnit: 'kW', usesMD: false, reactive: false, fca: true, ed: true,
+        fixed: ({CL, days}) => toPaise(15 * CL * days), // per kW per day
+        energyFlat: 4.65
+      }
+    };
+
+    // Slab energy calculator (capacities per 30 days, paise rates)
+    function slabEnergy(units, days, caps, ratesPaise){
+      const factor = days/30;
+      let rem = units;
+      let costPaise = 0;
+      const lines = [];
+      for(let i=0;i<caps.length;i++){
+        const cap = (caps[i] === Infinity) ? Infinity : caps[i] * factor;
+        const take = Math.max(Math.min(rem, cap), 0);
+        if (take > 0 || cap === Infinity){
+          const rate = ratesPaise[i];
+          const lineCost = Math.round(take * rate); // paise
+          costPaise += lineCost;
+          lines.push({
+            label: cap===Infinity ? `Above` : `Up to ${Math.round(cap)} units (slab ${i+1})`,
+            qty: take,
+            ratePaise: rate,
+            amtPaise: lineCost
+          });
+          rem -= take;
+        }
+        if(rem <= 0) break;
+      }
+      return { costPaise, lines };
+    }
+
+    // BPL energy: first 50@150 (prorated), then continue main slabs from slab 2 onward
+    function bplEnergy(units, days, caps, mainRatesPaise){
+      const factor = days/30;
+      const bplCap = 50 * factor;
+      const first = Math.min(units, bplCap);
+      const firstCost = Math.round(first * 150);
+      const lines = [{ label: `BPL first ${Math.round(bplCap)} units`, qty: first, ratePaise: 150, amtPaise: firstCost }];
+      let rem = units - first;
+      let costPaise = firstCost;
+
+      if (rem > 0){
+        const caps2 = [caps[1], caps[2], caps[3]];
+        const rates2 = [mainRatesPaise[1], mainRatesPaise[2], mainRatesPaise[3]];
+        const se = slabEnergy(rem, days, caps2, rates2);
+        costPaise += se.costPaise;
+        se.lines.forEach((ln) => lines.push(ln));
+      }
+      return { costPaise, lines };
+    }
+
+    // Field visibility
+    function refreshFieldVisibility(){
+      const t = Tariffs[tariffEl.value];
+      clLabel.textContent = `Contracted Load (${t.clUnit})`;
+      clHint.textContent = (t.clUnit === 'HP') ? 'Used for fixed; HP-based tariffs.' : 'Used for fixed and some energy rates.';
+      mdWrap.style.display = t.usesMD ? '' : 'none';
+      kvarhWrap.style.display = t.reactive ? '' : 'none';
+      fcaWrap.style.display = t.fca ? '' : 'none';
+      edWrap.style.display = t.ed ? '' : 'none';
+      metaMD.style.display = t.usesMD ? '' : 'none';
+    }
+    tariffEl.addEventListener('change', refreshFieldVisibility);
+
+    // Breakdown builders
+    function clearBreakdown(){
+      bd.innerHTML = '';
+      bd.appendChild(rowHead());
+    }
+    function rowHead(){
+      const r = document.createElement('div');
+      r.className = 'bd-row bd-head';
+      r.innerHTML = `<div>Description</div><div>Quantity × Rate</div><div class="amt">Amount</div>`;
+      return r;
+    }
+    function rowSubhead(title, kind){
+      const r = document.createElement('div');
+      r.className = 'bd-row bd-subhead ' + (kind || '');
+      r.style.gridColumn = '1 / -1';
+      r.textContent = title;
+      return r;
+    }
+    function rowItem(label, qr, amt, emphasize=false){
+      const r = document.createElement('div');
+      r.className = 'bd-row' + (emphasize ? ' total-line' : '');
+      r.innerHTML = `<div>${label}</div><div>${qr || ''}</div><div class="amt">${amt}</div>`;
+      return r;
+    }
+    function rowNote(text){
+      const r = document.createElement('div');
+      r.className = 'bd-row bd-note';
+      r.style.gridColumn = '1 / -1';
+      r.textContent = text;
+      return r;
+    }
+    function rowBlank(){
+      const r = document.createElement('div');
+      r.className = 'bd-row bd-blank';
+      r.style.gridColumn = '1 / -1';
+      r.innerHTML = '<div></div>';
+      return r;
+    }
+
+    // Main calculation
+    calcBtn.addEventListener('click', () => {
+      const t = Tariffs[tariffEl.value];
+      const CL = +clEl.value || 0;
+      const MD = +mdEl.value || 0;
+      const units = +unitsEl.value || 0;
+      const days = Math.max(1, Math.floor(+daysEl.value || 30));
+      const kvarh = +kvarhEl.value || 0;
+      const fcaRateRs = +fcaEl.value || 0;
+      const edPct = +edEl.value || 0;
+
+      // Meta
+      metaTariff.textContent = `Tariff: ${t.label}`;
+      metaPeriod.textContent = `Days: ${days}`;
+      metaUsage.textContent = `Units: ${units.toFixed(2)}`;
+      metaCL.textContent = `CL: ${CL.toFixed(2)} ${t.clUnit}`;
+      metaMD.textContent = `MD: ${MD.toFixed(2)} kW`;
+      metaFCA.textContent = t.fca ? `FCA: ₹${fcaRateRs.toFixed(2)}/unit` : `FCA: —`;
+      metaED.textContent = t.ed ? `ED: ${edPct.toFixed(2)}%` : `ED: —`;
+
+      // Fixed
+      const ctx = { CL, MD, units, days, kvarh };
+      const fixedPaise = t.fixed(ctx);
+
+      // Energy
+      let energyPaise = 0;
+      let energyLines = []; // {label, qty, ratePaise, amtPaise}
+      if (t.energySlab){
+        const {caps, ratesPaise} = t.energySlab;
+        const { costPaise, lines } = slabEnergy(units, days, caps, ratesPaise);
+        energyPaise = costPaise; energyLines = lines;
+      } else if (t.bplBase){
+        const {caps, ratesPaise} = t.bplBase;
+        const { costPaise, lines } = bplEnergy(units, days, caps, ratesPaise);
+        energyPaise = costPaise; energyLines = lines;
+      } else {
+        // Flat rate
+        let rate = t.energyFlat ?? (t.energyFlatFn ? t.energyFlatFn({CL}) : 0);
+        const amt = toPaise(units * rate);
+        energyPaise = amt;
+        if (tariffEl.value === 'A1'){
+          energyLines = [{ label: 'Energy exempt', qty: 0, ratePaise: 0, amtPaise: 0 }];
+        } else {
+          energyLines = [{ label: `Flat energy`, qty: units, ratePaise: Math.round(rate*100), amtPaise: amt }];
+        }
+      }
+
+      // FCA
+      const fcaPaise = t.fca ? toPaise(units * fcaRateRs) : 0;
+
+      // Reactive
+      const reactivePaise = t.reactive ? toPaise(kvarh * 0.10) : 0;
+
+      // ED
+      const edBasePaise = (t.ed ? (fixedPaise + energyPaise + fcaPaise + reactivePaise) : 0);
+      const edPaise = t.ed ? Math.round(edBasePaise * (edPct/100)) : 0;
+
+      // Totals
+      const totalPaise = fixedPaise + energyPaise + fcaPaise + reactivePaise + edPaise;
+
+      // Update summary
+      mFixed.textContent = fmt(fixedPaise);
+      mEnergy.textContent = fmt(energyPaise);
+      mFCA.textContent = fmt(fcaPaise);
+      mReactive.textContent = fmt(reactivePaise);
+      mED.textContent = fmt(edPaise);
+      mTotal.textContent = fmt(totalPaise);
+
+      // Render breakdown
+      clearBreakdown();
+
+      // Fixed
+      bd.appendChild(rowSubhead('Fixed charge', 'fixed'));
+      bd.appendChild(rowItem('Fixed charge', prorationText(tariffEl.value, {CL, days}), fmt(fixedPaise)));
+      bd.appendChild(rowNote(fixedDetailText(tariffEl.value, {CL, MD, days})));
+
+      // Energy
+      bd.appendChild(rowSubhead('Energy charge', 'energy'));
+      if (energyLines.length){
+        energyLines.forEach((ln) => {
+          const rateRs = (ln.ratePaise/100).toFixed(2);
+          const qr = `${ln.qty.toFixed(2)} units × ₹${rateRs}/unit`;
+          bd.appendChild(rowItem(ln.label, qr, fmt(ln.amtPaise)));
+        });
+      } else {
+        bd.appendChild(rowItem('Energy', '', fmt(energyPaise)));
+      }
+
+      // FCA
+      bd.appendChild(rowSubhead('Fuel cost adjustment (FCA)', 'fca'));
+      if (t.fca){
+        bd.appendChild(rowItem('FCA', `${units.toFixed(2)} units × ₹${(+fcaRateRs).toFixed(2)}/unit`, fmt(fcaPaise)));
+      } else {
+        bd.appendChild(rowItem('FCA', 'Exempt', fmt(0)));
+      }
+
+      // Reactive
+      bd.appendChild(rowSubhead('Reactive energy', 'reactive'));
+      if (t.reactive){
+        bd.appendChild(rowItem('Reactive charge', `${kvarh.toFixed(2)} kvarh × ₹0.10/kvarh`, fmt(reactivePaise)));
+      } else {
+        bd.appendChild(rowItem('Reactive charge', 'Exempt', fmt(0)));
+      }
+
+      // ED
+      bd.appendChild(rowSubhead('Electricity duty', 'ed'));
+      if (t.ed){
+        bd.appendChild(rowItem('ED base', 'Fixed + Energy + FCA + Reactive', fmt(edBasePaise)));
+        bd.appendChild(rowItem(`ED @ ${edPct.toFixed(2)}%`, '', fmt(edPaise)));
+      } else {
+        bd.appendChild(rowItem('Electricity duty', 'Exempt', fmt(0)));
+      }
+
+      // Total
+      bd.appendChild(rowBlank());
+      bd.appendChild(rowSubhead('Total', 'total'));
+      bd.appendChild(rowItem('Total payable', '', fmt(totalPaise), true));
+    });
+
+    function prorationText(tariffId, {CL, days}){
+      switch(tariffId){
+        case 'A1': return `₹665/HP/year × ${CL.toFixed(2)} HP × Days/365 (${(days/365).toFixed(6)})`;
+        case 'TEMP': return `₹15/kW/day × ${CL.toFixed(2)} kW × ${days} days`;
+        default: return `per 30 days × Days/30 (${(days/30).toFixed(4)})`;
+      }
+    }
+
+    function fixedDetailText(tariffId, {CL, MD, days}){
+      switch(tariffId){
+        case 'RGPU':
+        case 'RGPR': {
+          const band = (CL <= 2) ? '≤2 kW ₹15' : (CL <= 4) ? '>2–≤4 kW ₹25' : (CL <= 6) ? '>4–≤6 kW ₹45' : '>6 kW ₹70';
+          return `Band by CL: ${band}; applied for ${days} day(s).`;
+        }
+        case 'RGPU_BPL':
+        case 'RGPR_BPL':
+          return `Fixed: ₹5 per 30 days, prorated by Days/30 (${(days/30).toFixed(4)}).`;
+        case 'GLP':
+          return `₹70 per installation per 30 days, prorated by Days/30 (${(days/30).toFixed(4)}).`;
+        case 'NRGP': {
+          const first = Math.min(CL, 10);
+          const second = Math.max(Math.min(CL - 10, 30), 0);
+          return `First 10 kW @ ₹50/kW (${first.toFixed(2)} kW), next 30 kW @ ₹85/kW (${second.toFixed(2)} kW); × Days/30.`;
+        }
+        case 'LTMD': {
+          const bdemand = Math.max(0.85 * CL, MD);
+          const driver = (bdemand === MD) ? 'MD governs' : '85% of CL governs';
+          return `Billing demand = max(0.85×CL, MD) = ${bdemand.toFixed(2)} kW (${driver}). Within CL: 0–40 kW @ ₹90, 40–60 @ ₹130, >60 @ ₹195; Above CL @ ₹265. × Days/30.`;
+        }
+        case 'A1':
+          return `₹665 per HP per year; prorated by Days/365.`;
+        case 'A2':
+        case 'A3':
+        case 'A4': {
+          const first = Math.min(CL, 7.5);
+          const rest = Math.max(CL - 7.5, 0);
+          return `First 7.5 HP @ ₹10/HP (${first.toFixed(2)} HP), remaining @ ₹5/HP (${rest.toFixed(2)} HP); × Days/30.`;
+        }
+        case 'A5':
+          return `Fixed charge is zero.`;
+        case 'WW_MU':
+          return `₹20 per installation per 30 days; × Days/30.`;
+        case 'WW_NP':
+        case 'WW_GP':
+          return `Fixed charge is zero.`;
+        case 'WW_PR':
+          return `₹25 per installation per 30 days; × Days/30.`;
+        case 'TEMP':
+          return `₹15 per kW per day on CL; no monthly proration.`;
+      }
+      return '';
+    }
+
+    // Initialize defaults
+    document.addEventListener('DOMContentLoaded', () => {
+      tariffEl.value = 'RGPU';
+      refreshFieldVisibility();
+    });
+  </script>
+</body>
+</html>
