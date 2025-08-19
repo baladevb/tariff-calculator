@@ -232,10 +232,10 @@
   <header>
     <div>
       <div class="title">Tariff Bill Calculator</div>
-      <div class="subtitle">Vibrant UI, exact day proration, and one‑page print</div>
+      <div class="subtitle">Exact day proration, Chammge ED, FCA if needed</div>
     </div>
     <div class="actions">
-      <span class="chip">FCA in ₹/unit</span>
+      <span class="chip">Made for personal use only</span>
       <span class="chip">Designed By B. H. Babariya</span>
       <button class="btn" id="calcBtn">Calculate</button>
       <button class="btn secondary" id="printBtn">Print</button>
@@ -289,12 +289,12 @@
         <div class="grid-2">
           <div>
             <label id="clLabel" for="cl">Contracted Load (kW)</label>
-            <input type="number" id="cl" step="0.01" min="0" placeholder="e.g., 5" />
+            <input type="number" id="cl" step="0.5" min="0" placeholder="e.g., 5" />
             <div class="hint" id="clHint">Used for fixed and some energy rates.</div>
           </div>
           <div id="mdWrap">
             <label for="md">Maximum Demand (kW)</label>
-            <input type="number" id="md" step="0.01" min="0" placeholder="e.g., 8" />
+            <input type="number" id="md" step="0.5" min="0" placeholder="e.g., 8" />
             <div class="hint">LTMD: Used for billing demand (vs 85% of CL).</div>
           </div>
         </div>
@@ -302,7 +302,7 @@
         <div class="grid-3">
           <div>
             <label for="units">Units (kWh)</label>
-            <input type="number" id="units" step="0.01" min="0" placeholder="e.g., 275" />
+            <input type="number" id="units" step="1" min="0" placeholder="e.g., 275" />
             <div class="hint">Energy consumption for the period.</div>
           </div>
           <div>
@@ -312,7 +312,7 @@
           </div>
           <div id="kvarhWrap">
             <label for="kvarh">Reactive energy (kvarh)</label>
-            <input type="number" id="kvarh" step="0.01" min="0" placeholder="e.g., 120" />
+            <input type="number" id="kvarh" step="1" min="0" placeholder="e.g., 120" />
             <div class="hint">LTMD only: ₹0.10/kvarh.</div>
           </div>
         </div>
@@ -325,7 +325,7 @@
           </div>
           <div id="edWrap">
             <label for="ed">Electricity Duty (%)</label>
-            <input type="number" id="ed" step="0.01" min="0" max="100" placeholder="e.g., 15" />
+            <input type="number" id="ed" step="0.5" min="0" max="100" placeholder="e.g., 15" />
             <div class="hint">Applies on Fixed + Energy + FCA + Reactive.</div>
           </div>
         </div>
