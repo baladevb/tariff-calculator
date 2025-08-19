@@ -2,39 +2,37 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Tariff Bill Calculator</title>
+  <title>PGVCL Bill Calculator</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    :root{
-      /* Vibrant theme */
-      --bg1: #0f1223;
-      --bg2: #141a37;
-      --panel: #1a2347;
-      --ink: #eef2fb;
-      --ink-strong: #ffffff;
-      --muted: #c9d4ee;
+    :root {
+      --bg1: #1a0036;
+      --bg2: #2d006e;
+      --panel: #2e085e;
+      --ink: #f8f8ff;
+      --ink-strong: #fff;
+      --muted: #e0cfff;
 
-      /* Accents */
-      --accent: #ff5f9e;      /* pink */
-      --accent-2: #6ab3ff;    /* sky */
-      --accent-3: #2ce6b8;    /* teal */
-      --accent-4: #ffd166;    /* amber */
-      --accent-5: #9b6cff;    /* violet */
+      /* Even bolder accents */
+      --accent: #ff2e9a;      /* hot pink */
+      --accent-2: #00eaff;    /* neon cyan */
+      --accent-3: #00ffb8;    /* neon green */
+      --accent-4: #ffe600;    /* neon yellow */
+      --accent-5: #a259ff;    /* vivid violet */
 
-      /* Lines and cards */
-      --border: #2f3a7a;
-      --line: #25306d;
-      --chip: #1d2656;
-      --row: #1b2452;
-      --row-alt: #202a5e;
+      --border: #5e2b97;
+      --line: #3e1a6d;
+      --chip: #2e085e;
+      --row: #2e085e;
+      --row-alt: #3e1a6d;
 
-      --danger: #ff6b6b;
-      --ok: #62e6a6;
+      --danger: #ff4e50;
+      --ok: #50ffb1;
 
       --radius: 14px;
       --radius-sm: 10px;
       --radius-lg: 18px;
-      --shadow: 0 12px 35px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.06);
+      --shadow: 0 12px 35px rgba(255,0,255,0.25), inset 0 1px 0 rgba(255,255,255,0.08);
     }
     *{ box-sizing: border-box; }
     html, body{ height: 100%; }
@@ -248,37 +246,43 @@
     <!-- Input card -->
     <section class="card">
       <div class="panel">
-        <div>
-          <label for="tariff">Tariff</label>
-          <select id="tariff">
-            <optgroup label="Residential General">
-              <option value="RGPU">RGPU</option>
-              <option value="RGPU_BPL">RGPU (BPL)</option>
-              <option value="RGPR">RGPR</option>
-              <option value="RGPR_BPL">RGPR (BPL)</option>
-            </optgroup>
-            <optgroup label="General / Commercial">
-              <option value="GLP">GLP</option>
-              <option value="NRGP">NRGP</option>
-              <option value="LTMD">LTMD</option>
-            </optgroup>
-            <optgroup label="Agriculture">
-              <option value="A1">A1</option>
-              <option value="A2">A2</option>
-              <option value="A3">A3</option>
-              <option value="A4">A4</option>
-              <option value="A5">A5</option>
-            </optgroup>
-            <optgroup label="Water Works">
-              <option value="WW_MU">WW.MU</option>
-              <option value="WW_NP">WW.NP</option>
-              <option value="WW_GP">WW.GP</option>
-              <option value="WW_PR">WW.PR</option>
-            </optgroup>
-            <optgroup label="Temporary">
-              <option value="TEMP">TEMP</option>
-            </optgroup>
-          </select>
+        <div style="display: flex; align-items: flex-end; gap: 12px;">
+          <div style="flex:1;">
+            <label for="tariff">Tariff</label>
+            <select id="tariff">
+              <optgroup label="Residential General">
+                <option value="RGPU">RGPU</option>
+                <option value="RGPU_BPL">RGPU (BPL)</option>
+                <option value="RGPR">RGPR</option>
+                <option value="RGPR_BPL">RGPR (BPL)</option>
+              </optgroup>
+              <optgroup label="General / Commercial">
+                <option value="GLP">GLP</option>
+                <option value="NRGP">NRGP</option>
+                <option value="LTMD">LTMD</option>
+              </optgroup>
+              <optgroup label="Agriculture">
+                <option value="A1">A1</option>
+                <option value="A2">A2</option>
+                <option value="A3">A3</option>
+                <option value="A4">A4</option>
+                <option value="A5">A5</option>
+              </optgroup>
+              <optgroup label="Water Works">
+                <option value="WW_MU">WW.MU</option>
+                <option value="WW_NP">WW.NP</option>
+                <option value="WW_GP">WW.GP</option>
+                <option value="WW_PR">WW.PR</option>
+              </optgroup>
+              <optgroup label="Temporary">
+                <option value="TEMP">TEMP</option>
+              </optgroup>
+            </select>
+          </div>
+          <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 2px;">
+            <input type="checkbox" id="includeFixed" checked style="width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer;" />
+            <label for="includeFixed" style="font-size: 13px; color: var(--muted); user-select: none; cursor: pointer;">Include fixed charge</label>
+          </div>
         </div>
 
         <div class="grid-2">
@@ -370,7 +374,7 @@
   </footer>
 
   <script>
-    // Money helpers
+  // Money helpers
     const toPaise = (rupees) => Math.round((+rupees || 0) * 100);
     const toRupees = (paise) => (paise / 100);
     const fmt = (paise) => '₹' + toRupees(paise).toFixed(2);
@@ -378,18 +382,19 @@
     // UI elements
     const el = (id) => document.getElementById(id);
     const tariffEl = el('tariff'), clEl = el('cl'), mdEl = el('md'), unitsEl = el('units'),
-          daysEl = el('days'), kvarhEl = el('kvarh'), fcaEl = el('fca'), edEl = el('ed');
+      daysEl = el('days'), kvarhEl = el('kvarh'), fcaEl = el('fca'), edEl = el('ed');
     const mdWrap = el('mdWrap'), kvarhWrap = el('kvarhWrap'), fcaWrap = el('fcaWrap'), edWrap = el('edWrap');
     const clLabel = el('clLabel'), clHint = el('clHint');
     const mFixed = el('mFixed'), mEnergy = el('mEnergy'), mFCA = el('mFCA'), mReactive = el('mReactive'), mED = el('mED'), mTotal = el('mTotal');
     const bd = el('bd');
     const metaTariff = el('metaTariff'), metaPeriod = el('metaPeriod'), metaUsage = el('metaUsage'),
-          metaCL = el('metaCL'), metaMD = el('metaMD'), metaFCA = el('metaFCA'), metaED = el('metaED');
+      metaCL = el('metaCL'), metaMD = el('metaMD'), metaFCA = el('metaFCA'), metaED = el('metaED');
+    const includeFixedEl = el('includeFixed');
 
     // Buttons
-    const printBtn = el('printBtn');
-    const printFitBtn = el('printFitBtn');
-    const calcBtn = el('calcBtn');
+  const printBtn = el('printBtn');
+  const printFitBtn = el('printFitBtn');
+  const calcBtn = el('calcBtn');
 
     // Print handlers
     printBtn.addEventListener('click', () => {
@@ -611,6 +616,7 @@
       const kvarh = +kvarhEl.value || 0;
       const fcaRateRs = +fcaEl.value || 0;
       const edPct = +edEl.value || 0;
+      const includeFixed = includeFixedEl ? includeFixedEl.checked : true;
 
       // Meta
       metaTariff.textContent = `Tariff: ${t.label}`;
@@ -623,7 +629,7 @@
 
       // Fixed
       const ctx = { CL, MD, units, days, kvarh };
-      const fixedPaise = t.fixed(ctx);
+      let fixedPaise = includeFixed ? t.fixed(ctx) : 0;
 
       // Energy
       let energyPaise = 0;
@@ -674,8 +680,13 @@
 
       // Fixed
       bd.appendChild(rowSubhead('Fixed charge', 'fixed'));
-      bd.appendChild(rowItem('Fixed charge', prorationText(tariffEl.value, {CL, days}), fmt(fixedPaise)));
-      bd.appendChild(rowNote(fixedDetailText(tariffEl.value, {CL, MD, days})));
+      if (includeFixed) {
+        bd.appendChild(rowItem('Fixed charge', prorationText(tariffEl.value, {CL, days}), fmt(fixedPaise)));
+        bd.appendChild(rowNote(fixedDetailText(tariffEl.value, {CL, MD, days})));
+      } else {
+        bd.appendChild(rowItem('Fixed charge', '', 'Excluded'));
+        bd.appendChild(rowNote('User opted to exclude fixed charge.'));
+      }
 
       // Energy
       bd.appendChild(rowSubhead('Energy charge', 'energy'));
