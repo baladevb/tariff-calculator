@@ -579,11 +579,18 @@
       r.innerHTML = `<div>Description</div><div>Quantity × Rate</div><div class="amt">Amount</div>`;
       return r;
     }
-    function rowSubhead(title, kind){
+    function rowSubhead(title, kind, extraHtml){
       const r = document.createElement('div');
       r.className = 'bd-row bd-subhead ' + (kind || '');
       r.style.gridColumn = '1 / -1';
-      r.textContent = title;
+      if (extraHtml) {
+        r.innerHTML = `<span>${title}</span><span style="float:right;font-weight:900;color:var(--accent);">${extraHtml}</span>`;
+        r.style.display = 'flex';
+        r.style.justifyContent = 'space-between';
+        r.style.alignItems = 'center';
+      } else {
+        r.textContent = title;
+      }
       return r;
     }
     function rowItem(label, qr, amt, emphasize=false){
@@ -680,7 +687,7 @@
       clearBreakdown();
 
       // Fixed
-      bd.appendChild(rowSubhead('Fixed charge', 'fixed'));
+      bd.appendChild(rowSubhead('Fixed charge', 'fixed', fmt(fixedPaise)));
       if (includeFixed) {
         bd.appendChild(rowItem('Fixed charge', prorationText(tariffEl.value, {CL, days}), fmt(fixedPaise)));
         bd.appendChild(rowNote(fixedDetailText(tariffEl.value, {CL, MD, days})));
@@ -690,7 +697,7 @@
       }
 
       // Energy
-      bd.appendChild(rowSubhead('Energy charge', 'energy'));
+      bd.appendChild(rowSubhead('Energy charge', 'energy', fmt(energyPaise)));
       if (energyLines.length){
         energyLines.forEach((ln) => {
           const rateRs = (ln.ratePaise/100).toFixed(2);
@@ -702,7 +709,7 @@
       }
 
       // FCA
-      bd.appendChild(rowSubhead('Fuel cost adjustment (FCA)', 'fca'));
+      bd.appendChild(rowSubhead('Fuel cost adjustment (FCA)', 'fca', fmt(fcaPaise)));
       if (t.fca){
         bd.appendChild(rowItem('FCA', `${units.toFixed(2)} units × ₹${(+fcaRateRs).toFixed(2)}/unit`, fmt(fcaPaise)));
       } else {
@@ -710,7 +717,7 @@
       }
 
       // Reactive
-      bd.appendChild(rowSubhead('Reactive energy', 'reactive'));
+      bd.appendChild(rowSubhead('Reactive energy', 'reactive', fmt(reactivePaise)));
       if (t.reactive){
         bd.appendChild(rowItem('Reactive charge', `${kvarh.toFixed(2)} kvarh × ₹0.10/kvarh`, fmt(reactivePaise)));
       } else {
@@ -718,7 +725,7 @@
       }
 
       // ED
-      bd.appendChild(rowSubhead('Electricity duty', 'ed'));
+      bd.appendChild(rowSubhead('Electricity duty', 'ed', fmt(edPaise)));
       if (t.ed){
         bd.appendChild(rowItem('ED base', 'Fixed + Energy + FCA + Reactive', fmt(edBasePaise)));
         bd.appendChild(rowItem(`ED @ ${edPct.toFixed(2)}%`, '', fmt(edPaise)));
