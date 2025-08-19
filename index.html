@@ -6,33 +6,33 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root {
-      --bg1: #f7fafc;
-      --bg2: #e3f6fd;
-      --panel: #fff;
-      --ink: #2d3142;
-      --ink-strong: #1a1a1a;
-      --muted: #7b8794;
+      --bg1: #e9eef3;
+      --bg2: #c7d7e6;
+      --panel: #f7f9fa;
+      --ink: #22304a;
+      --ink-strong: #162033;
+      --muted: #6c7a89;
 
-      /* Vibrant accents using color theory (triadic, analogous, complementary) */
-      --accent: #ff6f61;      /* Vibrant coral (complementary to teal) */
-      --accent-2: #36b1c5;    /* Bright teal (triadic) */
-      --accent-3: #ffd166;    /* Warm yellow (analogous to coral) */
-      --accent-4: #06d6a0;    /* Fresh green (triadic) */
-      --accent-5: #845ec2;    /* Lively purple (analogous to teal) */
+      /* Professional accents: blue, teal, gold, NO purple */
+      --accent: #1976d2;      /* Professional blue */
+      --accent-2: #26a69a;    /* Teal */
+      --accent-3: #f9b233;    /* Gold */
+      --accent-4: #388e3c;    /* Green for OK */
+      --accent-5: #1976d2;    /* Use blue again for consistency, no purple */
 
-      --border: #d1d9e6;
-      --line: #e0e6ed;
-      --chip: #f0f4fa;
-      --row: #f9fafb;
-      --row-alt: #e3f6fd;
+      --border: #b0b9c6;
+      --line: #c2c9d6;
+      --chip: #e3eaf0;
+      --row: #f4f7fa;
+      --row-alt: #e3eaf0;
 
-      --danger: #ff4e50;
-      --ok: #06d6a0;
+      --danger: #e53935;
+      --ok: #388e3c;
 
       --radius: 14px;
       --radius-sm: 10px;
       --radius-lg: 18px;
-      --shadow: 0 4px 24px rgba(54,177,197,0.10), 0 1.5px 4px rgba(255,111,97,0.08);
+      --shadow: 0 4px 24px rgba(25,118,210,0.10), 0 1.5px 4px rgba(38,166,154,0.08);
     }
     *{ box-sizing: border-box; }
     html, body{ height: 100%; }
@@ -41,8 +41,8 @@
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, "Helvetica Neue", Arial;
       color: var(--ink);
       background:
-        radial-gradient(1200px 700px at 10% 0%, rgba(255,223,186,0.18), transparent 60%),
-        radial-gradient(1000px 600px at 90% 20%, rgba(54,177,197,0.10), transparent 60%),
+        radial-gradient(1200px 700px at 10% 0%, rgba(247,184,1,0.10), transparent 60%),
+        radial-gradient(1000px 600px at 90% 20%, rgba(45,156,219,0.08), transparent 60%),
         linear-gradient(160deg, var(--bg1), var(--bg2));
     }
     header{
@@ -68,7 +68,7 @@
 
     .card{
       background:
-        linear-gradient(180deg, rgba(255,255,255,0.85), rgba(227,246,253,0.90));
+        linear-gradient(180deg, rgba(245,247,250,0.98), rgba(201,227,239,0.93));
       border: 1px solid var(--border); border-radius: var(--radius);
       box-shadow: var(--shadow);
     }
@@ -109,7 +109,7 @@
     .summary{
   display: grid; gap: 12px; grid-template-columns: repeat(6, 1fr);
   padding: 14px; border-bottom: 1px solid var(--line);
-  background: linear-gradient(180deg, rgba(255,255,255,0.85), rgba(227,246,253,0.90));
+  background: linear-gradient(180deg, rgba(245,247,250,0.98), rgba(201,227,239,0.93));
   border-radius: var(--radius) var(--radius) 0 0;
     }
     @media (max-width: 1200px){ .summary{ grid-template-columns: repeat(3, 1fr); } }
@@ -130,7 +130,7 @@
   border: 1px solid var(--border);
   border-radius: 12px;
   overflow: hidden;
-  background: linear-gradient(180deg, rgba(255,255,255,0.85), rgba(227,246,253,0.90));
+  background: linear-gradient(180deg, rgba(245,247,250,0.98), rgba(201,227,239,0.93));
     }
     .bd-row{
   display: grid;
